@@ -43,6 +43,7 @@ int main(int argc, char *argv[]) {
 				}
 				break;
 			case '?':
+				fprintf(stderr, "Error: Option %c is unrecognized or requires an argument", optopt);
 				exit(1);
 		}
 	}
