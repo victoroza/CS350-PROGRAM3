@@ -6,6 +6,7 @@
 #include <queue>
 #include <stdlib.h>
 #include <deque>
+#include <unistd.h>
 
 using namespace std;
 
@@ -13,6 +14,9 @@ using namespace std;
 int NUM_BLOCKS = 8;
 int NUM_SEGMENTS = 32;
 int SIZE_DISK = 256;
+string inputFileName = "";
+
+int headLoc = -1;
 
 map<int, map<int, int>> nodeMap;
 
@@ -45,7 +49,7 @@ class Segment {
     		numGood++;
     		blocks.push_back(b);
     	}
-    	return blocks.size();
+    	return (blocks.size() - 1);
     }
 };
 
