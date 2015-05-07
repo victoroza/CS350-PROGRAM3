@@ -30,6 +30,9 @@ class Segment {
     int numGood = 0;
     vector<Block> blocks;
     int addBlock(Block b) {
-    	if(total )
+    	if(total < NUM_BLOCKS){
+
+    	}
+    	return 0;
     }
 };
