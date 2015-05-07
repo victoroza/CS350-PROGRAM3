@@ -16,7 +16,6 @@ void create(string line) {
 	string type;
 	int fileNum;
 	stringstream(line) >> type >> fileNum;
-	// istringstream(line) >> fileNum;
 	map<int, int> temp;
 	nodeMap[fileNum] = temp;
 }
@@ -27,7 +26,16 @@ void write(string line) {
 	int blockNum;
 	stringstream(line) >> type >> fileNum >> blockNum;
 	cout << "WRITE: " << fileNum << " " << blockNum << endl;
-	// (disk[headLoc]).add()
+	map<int,int>::iterator itF = (nodeMap.at(fileNum)).find(blockNum);
+	if(itF != (nodeMap.at(fileNum)).end()){
+		cout << "FOUND" << endl;
+		cout << itF->second << endl;
+	} else {
+		cout << "NOT FOUND AND ADDING" << endl;
+	}
+	Block b(fileNum, blockNum);
+	int segIndex = (disk[headLoc]).addBlock(b);
+	nodeMap[fileNum][blockNum] = segIndex;
 }
 
 void read(string line) {
