@@ -7,6 +7,27 @@ void test(){
 	cout << b1.state << endl;
 	Segment s1;
 	cout << s1.numStale << endl;
+	s1.addBlock(b1);
+}
+
+void addSegments() {
+	for(int i = 0; i < NUM_SEGMENTS; i++){
+		Segment s;
+		disk.push_back(s);
+		nodeOrder.push_back(i);
+	}
+}
+
+void cleanUp() {
+
+}
+
+void create(string line){
+	string type;
+	int fileNum;
+	stringstream(line) >> type >> fileNum;
+	// istringstream(line) >> fileNum;
+	cout << fileNum << endl;
 }
 
 int main() {
@@ -21,5 +42,19 @@ int main() {
 
 	//LEAVE HERE
 	test();
+	addSegments();
+	cout << disk.size() << endl;
+
+	ifstream myfile ("inputsmall.txt");
+		string line;
+		if (myfile.is_open()) {
+			while ( getline (myfile,line) )	{
+				string type;
+				stringstream(line) >> type;
+				if(type == "CREATE"){
+					create(line);
+				}
+			}
+		}
 	return 0;
 }

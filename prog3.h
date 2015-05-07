@@ -5,12 +5,16 @@
 #include <sstream>
 #include <queue>
 #include <stdlib.h>
+#include <deque>
 
 using namespace std;
+
 
 int NUM_BLOCKS = 8;
 int NUM_SEGMENTS = 32;
 int SIZE_DISK = 256;
+
+map<int, map<int, int>> nodeMap;
 
 class Block {
 	public:
@@ -25,14 +29,27 @@ class Block {
 
 class Segment {
   public:
-  	int total = 0;
     int numStale = 0;
     int numGood = 0;
     vector<Block> blocks;
+    int sizeUsed() {
+    	return blocks.size();
+    }
+    void markStale(int i){
+        blocks[i].state = false;
+        numStale++;
+        numGood--;
+    }
     int addBlock(Block b) {
-    	if(total < NUM_BLOCKS){
-
+    	if(blocks.size() < NUM_BLOCKS){
+    		numGood++;
+    		blocks.push_back(b);
     	}
-    	return 0;
+    	return blocks.size();
     }
 };
+
+
+
+vector<Segment> disk;
+deque<int> nodeOrder;
