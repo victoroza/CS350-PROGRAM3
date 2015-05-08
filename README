@@ -1,0 +1,81 @@
+Brian Kim - bkim35
+Michael Mcinerney - mmciner1
+Victor Oza - voza1
+
+To make:
+make
+
+To run the program you use
+./program3 -I <input-file> (which is required)
+The optional options are:
+-D <Size-Disk> 
+-B <Num-Blocks>
+<Size-Disk> must be between 16-1024, and Num-Blocks must be a power of 2 and should be <= than half of <Size-Disk>. All flags are optional, all specified flags (except u) require arguments
+The usuage string can be shown by running ./program3 -u
+
+The generator program can be run by making and then using:
+Usage: ./program3_gen -o <output-file-name> (where to write the commands to)
+-O <number-of-operations> (number of reads/writes combined)
+-R <which-to-prefer> (R-read, W-write, RAN-random) 
+-N <number-of-files> (number of files to use)
+-S <file-size> (blocks per file)
+
+
+Some inputs we have included:
+1) inputsmall.txt -
+	./program3 -I "inputsmall.txt"
+	output:
+		Number of Read Seeks (less expensive than clean seek): 2
+		Number of Clean Seeks (more expensive than a read seek): 0
+		Number of Total Seeks (including clean & read seeks): 2
+		Number of Total Instructions: 13
+
+2) inputdiff.txt
+	./program3 -I "inputdiff.txt" -D 16 -B 1
+	output:
+		Number of Read Seeks (less expensive than clean seek): 10
+		Number of Clean Seeks (more expensive than a read seek): 7
+		Number of Total Seeks (including clean & read seeks): 17
+		Number of Total Instructions: 48
+
+	./program3 -I "inputdiff.txt" -D 16 -B 2
+	output:
+		Number of Read Seeks (less expensive than clean seek): 10
+		Number of Clean Seeks (more expensive than a read seek): 5
+		Number of Total Seeks (including clean & read seeks): 15
+		Number of Total Instructions: 48
+
+	./program3 -I "inputdiff.txt" -D 128 -B 2
+	output:
+		Number of Read Seeks (less expensive than clean seek): 10
+		Number of Clean Seeks (more expensive than a read seek): 0
+		Number of Total Seeks (including clean & read seeks): 10
+		Number of Total Instructions: 48
+
+3) out.txt
+	./program3 -I "out.txt"
+	output:
+		Number of Read Seeks (less expensive than clean seek): 672
+		Number of Clean Seeks (more expensive than a read seek): 3
+		Number of Total Seeks (including clean & read seeks): 675
+		Number of Total Instructions: 1044
+
+	./program3 -I "out.txt" -D 200 -B 1
+	output:
+		Number of Read Seeks (less expensive than clean seek): 672
+		Number of Clean Seeks (more expensive than a read seek): 4
+		Number of Total Seeks (including clean & read seeks): 676
+		Number of Total Instructions: 1044
+
+4) sm.txt
+	./program3 -I sm.txt
+	output:
+		Number of Read Seeks (less expensive than clean seek): 530
+		Number of Clean Seeks (more expensive than a read seek): 5
+		Number of Total Seeks (including clean & read seeks): 535
+		Number of Total Instructions: 1006
+
+
+
+
+	

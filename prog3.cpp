@@ -9,8 +9,9 @@ void addSegments() {
 }
 
 void cleanUp() {
-	cout << "CALLED CLEANUP" << endl;
-	cout << "NODE FULLY BEFORE ORDER SIZE: " << nodeOrder.size() << endl;
+	// cout << "CALLED CLEANUP" << endl;
+	// cout << "NODE FULLY BEFORE ORDER SIZE: " << nodeOrder.size() << endl;
+	// cout << "CLEANING" << endl;
 	cleanSeeks++;
 	seeks++;
 	bool foundAllStale = false;
@@ -22,20 +23,20 @@ void cleanUp() {
 		index = -1;
 		for(int i = 0; i < filled.size(); i++) {
 			if(disk[filled[i]].numStale > mostStale) {
-				cout << "FILLED BEFORE SIZE: " << filled.size() << endl;
+				// cout << "FILLED BEFORE SIZE: " << filled.size() << endl;
 				mostStale = disk[filled[i]].numStale;
 				index = filled[i];
 				filled.erase(filled.begin()+i);
-				cout << "FILLED AFTER SIZE: " << filled.size() << endl;
+				// cout << "FILLED AFTER SIZE: " << filled.size() << endl;
 			}
 		}
 		if (mostStale == -1) {
-			cout << "NODE ORDER BEFORE SIZE: " << nodeOrder.size() << endl;
+			// cout << "NODE ORDER BEFORE SIZE: " << nodeOrder.size() << endl;
 			foundAllStale = true;
 			int indexToGet = rand() % nodeOrder.size();
 			index = nodeOrder[indexToGet];
 			nodeOrder.erase(nodeOrder.begin()+indexToGet);
-			cout << "NODE ORDER AFTER SIZE: " << nodeOrder.size() << endl;
+			// cout << "NODE ORDER AFTER SIZE: " << nodeOrder.size() << endl;
 		}
 		for(int i = 0; i < NUM_BLOCKS; i++) {
 			if(((disk[index]).blocks)[i].state == true) {
@@ -47,7 +48,7 @@ void cleanUp() {
 					int segIndex = (disk[headLoc]).addBlock(b);
 					LocationN loc(headLoc, segIndex);
 					nodeMap[fileNum][blockNum] = loc;
-					cout << nodeMap[fileNum][blockNum].segmentIndex << endl;
+					// cout << nodeMap[fileNum][blockNum].segmentIndex << endl;
 					keepChecking = nodeMap[fileNum][blockNum].segmentIndex;
 					if(nodeMap[fileNum][blockNum].segmentIndex == -1){
 						filled.push_back(headLoc);
@@ -64,7 +65,7 @@ void cleanUp() {
 
 		// }
 	}
-	cout << "NODE FULLY AFTER ORDER SIZE: " << nodeOrder.size() << endl;
+	// cout << "NODE FULLY AFTER ORDER SIZE: " << nodeOrder.size() << endl;
 }
 
 void create(string line) {
@@ -80,15 +81,15 @@ void write(string line) {
 	int fileNum;
 	int blockNum;
 	stringstream(line) >> type >> fileNum >> blockNum;
-	cout << "WRITE: " << fileNum << " " << blockNum << endl;
+	// cout << "WRITE: " << fileNum << " " << blockNum << endl;
 	map<int,LocationN>::iterator itF = (nodeMap.at(fileNum)).find(blockNum);
 	if(itF != (nodeMap.at(fileNum)).end()){
-		cout << "FOUND" << endl;
+		// cout << "FOUND" << endl;
 		// cout << itF->second.segmentNum << endl;
 		// cout << itF->second.segmentIndex << endl;
 		disk[itF->second.segmentNum].markStale(itF->second.segmentIndex);
 	} else {
-		cout << "NOT FOUND AND ADDING" << endl;
+		// cout << "NOT FOUND AND ADDING" << endl;
 	}
 	int keepChecking = -1;
 	while(keepChecking == -1){
@@ -96,7 +97,7 @@ void write(string line) {
 		int segIndex = (disk[headLoc]).addBlock(b);
 		LocationN loc(headLoc, segIndex);
 		nodeMap[fileNum][blockNum] = loc;
-		cout << nodeMap[fileNum][blockNum].segmentIndex << endl;
+		// cout << nodeMap[fileNum][blockNum].segmentIndex << endl;
 		keepChecking = nodeMap[fileNum][blockNum].segmentIndex;
 		if(nodeMap[fileNum][blockNum].segmentIndex == -1){
 			filled.push_back(headLoc);
@@ -104,8 +105,8 @@ void write(string line) {
 			nodeOrder.pop_front();
 		}
 	}
-	cout << "ADDING TO NODE #: " << headLoc << endl;
-	cout << (int)(NUM_SEGMENTS * .2) << endl;
+	// cout << "ADDING TO NODE #: " << headLoc << endl;
+	// cout << (int)(NUM_SEGMENTS * .2) << endl;
 	if((nodeOrder.size() <= (int)(NUM_SEGMENTS * .2)) || (nodeOrder.size() <= ((int)(NUM_SEGMENTS * .2) + 1))) {
 		cleanUp();
 	}
