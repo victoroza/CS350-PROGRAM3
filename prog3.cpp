@@ -10,28 +10,32 @@ void addSegments() {
 
 void cleanUp() {
 	cout << "CALLED CLEANUP" << endl;
+	cout << "NODE FULLY BEFORE ORDER SIZE: " << nodeOrder.size() << endl;
 	cleanSeeks++;
 	seeks++;
 	bool foundAllStale = false;
 	int mostStale = -1;
 	int index = -1;
-	while((nodeOrder.size() <= (int)(NUM_SEGMENTS * .4)) || (nodeOrder.size() <= ((int)(NUM_SEGMENTS * .2) + 1))) {
+	while((nodeOrder.size() <= (int)(NUM_SEGMENTS * .4)) || (nodeOrder.size() <= ((int)(NUM_SEGMENTS * .4) + 1))) {
 		// while(!foundAllStale){
 		mostStale = -1;
 		index = -1;
 		for(int i = 0; i < filled.size(); i++) {
 			if(disk[filled[i]].numStale > mostStale) {
+				cout << "FILLED BEFORE SIZE: " << filled.size() << endl;
 				mostStale = disk[filled[i]].numStale;
 				index = filled[i];
 				filled.erase(filled.begin()+i);
+				cout << "FILLED AFTER SIZE: " << filled.size() << endl;
 			}
-
 		}
 		if (mostStale == -1) {
+			cout << "NODE ORDER BEFORE SIZE: " << nodeOrder.size() << endl;
 			foundAllStale = true;
 			int indexToGet = rand() % nodeOrder.size();
 			index = nodeOrder[indexToGet];
 			nodeOrder.erase(nodeOrder.begin()+indexToGet);
+			cout << "NODE ORDER AFTER SIZE: " << nodeOrder.size() << endl;
 		}
 		for(int i = 0; i < NUM_BLOCKS; i++) {
 			if(((disk[index]).blocks)[i].state == true) {
@@ -60,6 +64,7 @@ void cleanUp() {
 
 		// }
 	}
+	cout << "NODE FULLY AFTER ORDER SIZE: " << nodeOrder.size() << endl;
 }
 
 void create(string line) {
@@ -99,7 +104,7 @@ void write(string line) {
 			nodeOrder.pop_front();
 		}
 	}
-	cout << "ADDING TO: " << headLoc << endl;
+	cout << "ADDING TO NODE #: " << headLoc << endl;
 	cout << (int)(NUM_SEGMENTS * .2) << endl;
 	if((nodeOrder.size() <= (int)(NUM_SEGMENTS * .2)) || (nodeOrder.size() <= ((int)(NUM_SEGMENTS * .2) + 1))) {
 		cleanUp();
@@ -115,7 +120,7 @@ void close(string line) {
 	int fileNum;
 	stringstream(line) >> type >> fileNum;
 	for (map<int,LocationN>::iterator it=(nodeMap.at(fileNum)).begin(); it!=(nodeMap.at(fileNum)).end(); ++it) {
-		// cout << it->first << " => " << it->second << endl;
+		disk[it->second.segmentNum].markStale(it->second.segmentIndex);
 	}
 }
 
@@ -167,6 +172,7 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Error: Invalid value for <Input-File-Name>\n");
 		exit(1);
 	}
+	NUM_SEGMENTS = SIZE_DISK/NUM_BLOCKS;
 
 
 
@@ -198,7 +204,9 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
-	cout << "Number of Seeks: " << seeks << endl;
+	cout << "Number of Read Seeks (less expensive than clean seek): " << (seeks - cleanSeeks) << endl;
+	cout << "Number of Clean Seeks (more expensive than a read seek): " << cleanSeeks << endl;
+	cout << "Number of Total Seeks (including clean & read seeks): " << seeks << endl;
 	cout << "Number of Total Instructions: " << instCount << endl;
 	return 0;
 }
