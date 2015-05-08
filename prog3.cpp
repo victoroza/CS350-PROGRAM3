@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
 				}
 				break;
 			case '?':
-				fprintf(stderr, "Error: Invalid value for <Num-Blocks>");
+				fprintf(stderr, "Error: Invalid value for <Num-Blocks>\n");
 				exit(1);
 		}
 	}
