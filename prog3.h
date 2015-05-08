@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <deque>
 #include <unistd.h>
+#include <time.h>
 
 using namespace std;
 
@@ -16,9 +17,26 @@ int NUM_SEGMENTS = 32;
 int SIZE_DISK = 256;
 string inputFileName = "";
 
+int seeks = 0;
+int cleanSeeks = 0;
+int instCount = 0;
+
 int headLoc = -1;
 
-map<int, map<int, int>> nodeMap;
+class LocationN {
+    public:
+        int segmentNum = -1;
+        int segmentIndex = -1;
+        LocationN(){
+
+        }
+        LocationN(int x, int y) {
+            segmentNum = x;
+            segmentIndex = y;
+        }
+};
+
+map<int, map<int, LocationN>> nodeMap;
 
 class Block {
 	public:
@@ -48,7 +66,9 @@ class Segment {
     	if(blocks.size() < NUM_BLOCKS){
     		numGood++;
     		blocks.push_back(b);
-    	}
+    	}  else {
+            return -1;
+        }
     	return (blocks.size() - 1);
     }
 };
@@ -57,3 +77,4 @@ class Segment {
 
 vector<Segment> disk;
 deque<int> nodeOrder;
+deque<int> filled;

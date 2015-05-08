@@ -9,14 +9,57 @@ void addSegments() {
 }
 
 void cleanUp() {
+	cout << "CALLED CLEANUP" << endl;
+	cleanSeeks++;
+	seeks++;
+	bool foundAllStale = false;
+	int mostStale = -1;
+	int index = -1;
+	while((nodeOrder.size() <= (int)(NUM_SEGMENTS * .4)) || (nodeOrder.size() <= ((int)(NUM_SEGMENTS * .2) + 1))) {
+		// while(!foundAllStale){
+		mostStale = -1;
+		index = -1;
+		for(int i = 0; i < filled.size(); i++) {
+			if(disk[filled[i]].numStale > mostStale) {
+				mostStale = disk[filled[i]].numStale;
+				index = filled[i];
+			}
 
+		}
+		if (mostStale == -1) {
+			foundAllStale = true;
+			index = rand() % nodeOrder.size();
+		}
+		for(int i = 0; i < NUM_BLOCKS; i++) {
+			if(((disk[index]).blocks)[i].state == true) {
+				int keepChecking = -1;
+				int blockNum = ((disk[index]).blocks)[i].blockNumber;
+				int fileNum = ((disk[index]).blocks)[i].fileNumber;
+				while(keepChecking == -1){
+					Block b(fileNum, blockNum);
+					int segIndex = (disk[headLoc]).addBlock(b);
+					LocationN loc(headLoc, segIndex);
+					nodeMap[fileNum][blockNum] = loc;
+					cout << nodeMap[fileNum][blockNum].segmentIndex << endl;
+					keepChecking = nodeMap[fileNum][blockNum].segmentIndex;
+					if(nodeMap[fileNum][blockNum].segmentIndex == -1){
+						filled.push_back(headLoc);
+						headLoc = nodeOrder.front();
+						nodeOrder.pop_front();
+					}
+				}
+			}
+		}
+
+		// }
+	}
 }
 
 void create(string line) {
 	string type;
 	int fileNum;
 	stringstream(line) >> type >> fileNum;
-	map<int, int> temp;
+	map<int, LocationN> temp;
 	nodeMap[fileNum] = temp;
 }
 
@@ -26,36 +69,51 @@ void write(string line) {
 	int blockNum;
 	stringstream(line) >> type >> fileNum >> blockNum;
 	cout << "WRITE: " << fileNum << " " << blockNum << endl;
-	map<int,int>::iterator itF = (nodeMap.at(fileNum)).find(blockNum);
+	map<int,LocationN>::iterator itF = (nodeMap.at(fileNum)).find(blockNum);
 	if(itF != (nodeMap.at(fileNum)).end()){
 		cout << "FOUND" << endl;
-		cout << itF->second << endl;
+		// cout << itF->second.segmentNum << endl;
+		// cout << itF->second.segmentIndex << endl;
+		disk[itF->second.segmentNum].markStale(itF->second.segmentIndex);
 	} else {
 		cout << "NOT FOUND AND ADDING" << endl;
 	}
-	Block b(fileNum, blockNum);
-	int segIndex = (disk[headLoc]).addBlock(b);
-	nodeMap[fileNum][blockNum] = segIndex;
+	int keepChecking = -1;
+	while(keepChecking == -1){
+		Block b(fileNum, blockNum);
+		int segIndex = (disk[headLoc]).addBlock(b);
+		LocationN loc(headLoc, segIndex);
+		nodeMap[fileNum][blockNum] = loc;
+		cout << nodeMap[fileNum][blockNum].segmentIndex << endl;
+		keepChecking = nodeMap[fileNum][blockNum].segmentIndex;
+		if(nodeMap[fileNum][blockNum].segmentIndex == -1){
+			filled.push_back(headLoc);
+			headLoc = nodeOrder.front();
+			nodeOrder.pop_front();
+		}
+	}
+	cout << "ADDING TO: " << headLoc << endl;
+	cout << (int)(NUM_SEGMENTS * .2) << endl;
+	if((nodeOrder.size() <= (int)(NUM_SEGMENTS * .2)) || (nodeOrder.size() <= ((int)(NUM_SEGMENTS * .2) + 1))) {
+		cleanUp();
+	}
 }
 
 void read(string line) {
-	string type;
-	int fileNum;
-	int blockNum;
-	stringstream(line) >> type >> fileNum >> blockNum;
-	cout << "READ: " << fileNum << " " << blockNum << endl;
+	seeks++;
 }
 
 void close(string line) {
 	string type;
 	int fileNum;
 	stringstream(line) >> type >> fileNum;
-	for (map<int,int>::iterator it=(nodeMap.at(fileNum)).begin(); it!=(nodeMap.at(fileNum)).end(); ++it) {
-		cout << it->first << " => " << it->second << endl;
+	for (map<int,LocationN>::iterator it=(nodeMap.at(fileNum)).begin(); it!=(nodeMap.at(fileNum)).end(); ++it) {
+		// cout << it->first << " => " << it->second << endl;
 	}
 }
 
 int main(int argc, char *argv[]) {
+	srand (time(NULL));
 	//inputs here
 	//Need: NUM_BLOCKS, NUM_SEGMENTS, SIZE_DISK
 	//SIZE DISK SHOULD BE POWER OF 2 (16, 32, 64...)
@@ -119,16 +177,21 @@ int main(int argc, char *argv[]) {
 				create(line);
 
 			} else if(type == "WRITE") {
+				instCount++;
 				write(line);
 
 			} else if(type == "READ") {
+				instCount++;
 				read(line);
 
 			} else if(type == "CLOSE") {
+				instCount++;
 				close(line);
 
 			}
 		}
 	}
+	cout << "Number of Seeks: " << seeks << endl;
+	cout << "Number of Total Instructions: " << instCount << endl;
 	return 0;
 }
