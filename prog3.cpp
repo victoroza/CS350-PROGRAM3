@@ -23,12 +23,15 @@ void cleanUp() {
 			if(disk[filled[i]].numStale > mostStale) {
 				mostStale = disk[filled[i]].numStale;
 				index = filled[i];
+				filled.erase(filled.begin()+i);
 			}
 
 		}
 		if (mostStale == -1) {
 			foundAllStale = true;
-			index = rand() % nodeOrder.size();
+			int indexToGet = rand() % nodeOrder.size();
+			index = nodeOrder[indexToGet];
+			nodeOrder.erase(nodeOrder.begin()+indexToGet);
 		}
 		for(int i = 0; i < NUM_BLOCKS; i++) {
 			if(((disk[index]).blocks)[i].state == true) {
@@ -50,6 +53,10 @@ void cleanUp() {
 				}
 			}
 		}
+		Segment s;
+		disk[index] = s;
+		nodeOrder.push_back(index);
+
 
 		// }
 	}
